@@ -6,27 +6,45 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct PizzaShopApp: App {
-    @ObservedObject var viewModel: CatalogViewModel = CatalogViewModel()
+    // MARK: - PROPERTIEW
+    //
+    @AppStorage("isOnboarding") var isOnboarding: Bool = true
+
+    @StateObject var catalogViewModel: CatalogViewModel = CatalogViewModel()
     
-    init() {
-        if UserDefaults.standard.bool(forKey: "isLogin") {
-            viewModel.isLogin = true
-        }
-    }
+    //Firebase...
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
-            if viewModel.isLogin {
-                TabBar()
-                    .environmentObject(viewModel)
+            if !isOnboarding {
+               PizzaShop()
             } else {
-                AuthView()
-                    .environmentObject(viewModel)
+                OnboardingView()
             }
-               
         }
     }
+}
+
+//WindowGroup {
+//    if isOnboarding {
+//        OnboardingView()
+//        } else if isAuth {
+//      AuthView()
+//        } else {
+//            TabBar()
+//        }
+//}
+
+//Firebase...
+class AppDelegate: NSObject, UIApplicationDelegate {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    FirebaseApp.configure()
+      
+    return true
+  }
 }
